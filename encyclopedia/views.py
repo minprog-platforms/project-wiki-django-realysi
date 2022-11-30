@@ -33,3 +33,6 @@ def search(request):
         return HttpResponseRedirect((reverse("entry", args=(q, ))))
     else:
         return HttpResponse("Moet dit nog aanpassen!!!!!!!")
+
+def new_page(request):
+    return render(request, "encyclopedia/new_page.html")
