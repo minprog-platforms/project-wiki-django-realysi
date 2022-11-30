@@ -1,6 +1,8 @@
 from django.shortcuts import render
-from django.http import HttpResponse
 from markdown2 import Markdown
+from django.http import HttpResponseRedirect
+from django.urls import reverse
+from django.http import HttpResponse
 
 
 
@@ -24,3 +26,10 @@ def entry_page(request, title):
 def markdown_to_html(entry):
     to_convert = Markdown()
     return to_convert.convert(entry)
+
+def search(request):
+    q = request.GET.get('q')
+    if util.get_entry(q):
+        return HttpResponseRedirect((reverse("entry", args=(q, ))))
+    else:
+        return HttpResponse("Noop")
