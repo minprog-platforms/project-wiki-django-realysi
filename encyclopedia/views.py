@@ -19,7 +19,6 @@ def entry_page(request, title):
         "content": html_content,
         "exists": content is not None,
         "title": title if content is not None else "Error"
-        
     })
 
 def markdown_to_html(entry):
