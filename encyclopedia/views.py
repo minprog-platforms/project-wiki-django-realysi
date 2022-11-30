@@ -32,4 +32,4 @@ def search(request):
     if util.get_entry(q):
         return HttpResponseRedirect((reverse("entry", args=(q, ))))
     else:
-        return HttpResponse("Noop")
+        return HttpResponse("Moet dit nog aanpassen!!!!!!!")
