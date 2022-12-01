@@ -36,3 +36,11 @@ def search(request):
 
 def new_page(request):
     return render(request, "encyclopedia/new_page.html")
+
+def save(request):
+    title = request.GET.get('title')
+    return HttpResponse(print(util.list_entries))
+    #return render(request, "encyclopedia/error-message.html", {
+     #       "Error-message": ""
+    #    })
+    
