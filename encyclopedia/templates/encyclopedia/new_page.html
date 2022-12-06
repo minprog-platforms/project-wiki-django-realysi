@@ -6,7 +6,8 @@ Encyclopedia - New page
 
 {%block body%}
 <h1> Create a New Page</h1>
-<form method="post" action="{% url 'save' %}">
+<form method="post" action="{% url 'new' %}">
+    {% csrf_token %}
     <input id="title" placeholder="Title new page...">
     <div></div>
     <textarea id="md-text" placeholder="Put here the Markdown content for the page"></textarea>
