@@ -1,4 +1,6 @@
 from django.shortcuts import render
+import os
+
 from markdown2 import Markdown
 from django.http import HttpResponseRedirect
 from django.urls import reverse
@@ -43,3 +45,20 @@ def search(request):
 
 def new_page(request):
     return render(request, "encyclopedia/new_page.html")
+
+def safe_new_page(request):
+    if request.method == "POST":
+        form = NewPage(request.POST)
+
+        if form.is_valid():
+            title = form.cleaned_data.get('title')
+            content = form.cleaned_data.get('md-text')
+            util.save_entry(title, f'# {title}\n\n{content}')
+            return redirect('entry_page', title=title)
+        
+        else:
+            form = NewPage()
+
+        context = {'form': form}
+
+        return render(request, 'encyclopedia/new_page.html', context)

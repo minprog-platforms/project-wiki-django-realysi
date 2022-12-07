@@ -13,5 +13,5 @@ class NewPage(forms.Form):
         return title
 
     def save_entry_to_file(self, title, entry):
-        with open(f"entries/{title}.md", 'x') as f:
+        with open(f".entries/{title}.md", 'x') as f:
             f.write(f'# {title}\n' + entry)
