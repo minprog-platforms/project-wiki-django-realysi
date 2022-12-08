@@ -1,14 +1,35 @@
 {% extends "encyclopedia/layout.html" %}
 
-{%block title%}
-Encyclopedia - New page
-{%endblock%}
+{% block title %}
+    {% if edit %}
+        Editing {{ entryTitle }}
+    {% else %}
+        New entry
+    {% endif %}
+{% endblock %}
 
-{%block body%}
-<h1> Create a New Page</h1>
-<form method="POST" action="{% url 'safe_new_page' %}">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Save">
-</form>
-{%endblock%}
+{% block body %}
+    {% if edit %}
+        <h1>Editing {{ entryTitle }}</h1>
+    {% else %}
+        <h1>New Entry</h1>
+    {% endif %}
+
+    
+    {% if existing %}
+    <div class="alert alert-danger" role="alert">
+        An entry with this title already exists. To view or edit it, <a href="/wiki/{{ entry }}" class="alert-link">click here</a>.
+    </div>
+    <div class="alert alert-info" role="alert">
+        You could also change the title of this entry down below.
+    </div>
+    {% endif %}
+    <br>
+    <div class="form-group">
+        <form action="{% url 'new_page' %}" method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <input type = submit>
+        </form>
+    </div>        
+{% endblock %}

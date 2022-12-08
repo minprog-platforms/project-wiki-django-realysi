@@ -11,11 +11,13 @@ from django.core.files.storage import default_storage
 from django.contrib import messages
 from . import util
 from .form import NewPage
+import re
+from random import randint
 
-class NewPage(forms.Form):
-    title = forms.CharField(widget=forms.TextInput())
-    content = forms.CharField(widget=forms.Textarea())
-
+class NewEntryForm(forms.Form):
+    title = forms.CharField(label="Entry title", widget=forms.TextInput(attrs={'class' : 'form-control col-md-8 col-lg-8'}))
+    content = forms.CharField(widget=forms.Textarea(attrs={'class' : 'form-control col-md-8 col-lg-8', 'rows' : 10}))
+    edit = forms.BooleanField(initial=False, widget=forms.HiddenInput(), required=False)
 
 
 def index(request):
@@ -38,27 +40,49 @@ def markdown_to_html(entry):
 
 def search(request):
     q = request.GET.get('q')
+    entry = util.get_entry(q)
+    titles = util.list_entries()
     if util.get_entry(q):
         return HttpResponseRedirect((reverse("entry", args=(q, ))))
-    else:
-        return HttpResponse("Moet dit nog aanpassen!!!!!!!")
 
+    lijst = []
+    for item in titles:
+        if re.search(q, item, re.IGNORECASE):
+            lijst.append(item)
+
+    return render(request, "encyclopedia/search_results.html", {
+        "name": q, 
+        "entries": lijst
+    })
+    
 def new_page(request):
-    return render(request, "encyclopedia/new_page.html")
-
-def safe_new_page(request):
     if request.method == "POST":
-        form = NewPage(request.POST)
-
+        form = NewEntryForm(request.POST)
         if form.is_valid():
-            title = form.cleaned_data.get('title')
-            content = form.cleaned_data.get('md-text')
-            util.save_entry(title, f'# {title}\n\n{content}')
-            return redirect('entry_page', title=title)
-        
+            title = form.cleaned_data["title"]
+            content = form.cleaned_data["content"]
+            if(util.get_entry(title) is None or form.cleaned_data["edit"] is True):
+                util.save_entry(title,content)
+                return HttpResponseRedirect(reverse("entry", kwargs={'title': title}))
+            else:
+                return render(request, "encyclopedia/new_page.html", {
+                "form": form,
+                "existing": True,
+                "entry": title
+                })
         else:
-            form = NewPage()
+            return render(request, "encyclopedia/new_page.html", {
+            "form": form,
+            "existing": False
+            })
+    else:
+        return render(request,"encyclopedia/new_page.html", {
+            "form": NewEntryForm(),
+            "existing": False
+        })    
 
-        context = {'form': form}
+def random(request):
+    pages = util.list_entries()
+    random_page = pages[randint(0, len(pages) - 1)]
+    return redirect("entry", random_page) 
 
-        return render(request, 'encyclopedia/new_page.html', context)
