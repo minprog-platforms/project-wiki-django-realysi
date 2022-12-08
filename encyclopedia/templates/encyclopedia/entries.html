@@ -8,6 +8,7 @@
     <div class="container">
         <div>
             {% if exists %}
+            <a href="{%url 'edit_page' title%}" role="button">Edit</a>
                 {{ content| safe }}
             {% else %}
                 <h1>404 error??</h1>
